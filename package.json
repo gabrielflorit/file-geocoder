@@ -1,10 +1,10 @@
 {
-  "name": "mongo-geocoder",
+  "name": "mongo-google-geocoder",
   "version": "0.0.1",
   "description": "Geocode a MongoDB collection",
-  "repository": "https://github.com/gabrielflorit/mongo-geocoder.git",
+  "repository": "https://github.com/gabrielflorit/mongo-google-geocoder.git",
   "bin": {
-    "mongo-geocoder": "./bin/mongo-geocoder"
+    "mongo-google-geocoder": "./bin/mongo-google-geocoder"
   },
   "author": "Gabriel Florit",
   "license": "MIT",
