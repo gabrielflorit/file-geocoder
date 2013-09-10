@@ -72,14 +72,20 @@ MongoClient.connect(argv.connection + argv.database, function(err, db) {
 				geocoder.geocode(address, function (err, data) {
 
 					var status = data.status;
+					var updates = {};
 
 					if (status === 'ZERO_RESULTS') {
-						summary.push(status);
 					} else {
-						summary.push(data.results[0].geometry.location_type);
+
+						status = data.results[0].geometry.location_type;
+						var coords = data.results[0].geometry.location;
+						updates = {lat: coords.lat, lng: coords.lng};
 					}
 
-					var updates = {Geocode: data};
+					summary.push(status);
+					updates.Geocode = data;
+					updates.GeocodeStatus = status;
+
 					collection.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
 
 						counter++;

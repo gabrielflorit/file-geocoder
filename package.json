@@ -1,6 +1,6 @@
 {
   "name": "mongo-google-geocoder",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "Geocode a MongoDB collection",
   "repository": "https://github.com/gabrielflorit/mongo-google-geocoder.git",
   "bin": {
