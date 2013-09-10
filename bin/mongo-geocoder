@@ -1,0 +1,61 @@
+#!/usr/bin/env node
+
+var fs = require('fs');
+var optimist = require('optimist');
+var mongo = require('mongodb');
+var geocoder = require('geocoder');
+
+var argv = optimist
+	.usage('Geocode a MongoDB collection.\nUsage: $0')
+	.options('d', {
+		demand: true,
+		alias: 'database',
+		describe: 'the MongoDB database'
+	})
+	.options('c', {
+		demand: true,
+		alias: 'collection',
+		describe: 'the MongoDB collection'
+	})
+	.options('f', {
+		demand: true,
+		alias: 'fields',
+		describe: 'a comma-separated list of address fields, in order'
+	})
+	.argv;
+
+var MongoClient = mongo.MongoClient;
+
+MongoClient.connect('mongodb://127.0.0.1:27017/' + argv.d, function(err, db) {
+
+	var collection = db.collection(argv.c);
+	var counter = 0;
+
+	collection.count(function(err, count) {
+
+		// tell pace how many elements we're going to process
+		var pace = require('pace')({
+			total: count,
+			itemType: 'documents'
+		});
+
+		collection.find().each(function(err, doc) {
+
+			var updates = {Geocode: 'hey'};
+			collection.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
+
+				counter++;
+
+				pace.op(counter);
+
+				if (counter === count) {
+					db.close();
+				}
+
+			});
+
+		});
+
+	});
+
+});

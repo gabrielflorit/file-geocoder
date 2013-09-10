@@ -1,0 +1,21 @@
+{
+  "name": "mongo-geocoder",
+  "version": "0.0.1",
+  "description": "Geocode a MongoDB collection",
+  "repository": "https://github.com/gabrielflorit/mongo-geocoder.git",
+  "bin": {
+    "mongo-geocoder": "./bin/mongo-geocoder"
+  },
+  "author": "Gabriel Florit",
+  "license": "MIT",
+  "dependencies": {
+    "point-in-polygon": ">=0.0.0",
+    "optimist": ">=0.6.0",
+    "numeral": ">=1.4.8",
+    "pace": "git://github.com/gabrielflorit/pace.git#master"
+    "geocoder": "git://github.com/gabrielflorit/geocoder.git#master"
+  },
+  "engines": {
+    "node": ">=0.10.17"
+  }
+}
