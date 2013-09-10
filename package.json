@@ -9,11 +9,12 @@
   "author": "Gabriel Florit",
   "license": "MIT",
   "dependencies": {
-    "point-in-polygon": ">=0.0.0",
     "optimist": ">=0.6.0",
     "numeral": ">=1.4.8",
-    "pace": "git://github.com/gabrielflorit/pace.git#master"
-    "geocoder": "git://github.com/gabrielflorit/geocoder.git#master"
+    "pace": "git://github.com/gabrielflorit/pace.git#master",
+    "geocoder": "git://github.com/gabrielflorit/geocoder.git#master",
+    "mongodb": ">=1.3.19",
+    "lodash": ">=1.3.1"
   },
   "engines": {
     "node": ">=0.10.17"
