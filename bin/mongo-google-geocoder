@@ -5,6 +5,7 @@ var optimist = require('optimist');
 var mongo = require('mongodb');
 var geocoder = require('geocoder');
 var _ = require('lodash');
+var sleep = require('sleep');
 
 var argv = optimist
 	.usage('Geocode a MongoDB collection. Talks to a Google-style geocoder.\nUsage: $0')
@@ -41,6 +42,12 @@ var argv = optimist
 		describe: 'the MongoDB connection string',
 		default: 'mongodb://127.0.0.1:27017/'
 	})
+	.options('t', {
+		demand: false,
+		alias: 'throttle',
+		describe: 'time (in seconds) to throttle the geocoding requests.',
+		default: 0
+	})
 	.argv;
 
 var MongoClient = mongo.MongoClient;
@@ -52,59 +59,68 @@ MongoClient.connect(argv.connection + argv.database, function(err, db) {
 	var collection = db.collection(argv.collection);
 	var counter = 0;
 
-	collection.count(function(err, count) {
+	collection.find({Geocode:{$exists:false}}).count(function(err, count) {
 
-		// tell pace how many elements we're going to process
-		var pace = require('pace')({
-			total: count,
-			itemType: 'documents'
-		});
+		if (count > 0) {
 
-		collection.find().each(function(err, doc) {
+			// tell pace how many elements we're going to process
+			var pace = require('pace')({
+				total: count,
+				itemType: 'documents'
+			});
 
-			if (doc) {
+			collection.find({Geocode:{$exists:false}}).each(function(err, doc) {
 
-				// create the address
-				var address = argv.fields.split(',').map(function(value) {
-					return doc[value];
-				}).join(', ');
+				if (doc) {
 
-				geocoder.geocode(address, function (err, data) {
+					// create the address
+					var address = argv.fields.split(',').map(function(value) {
+						return doc[value];
+					}).join(', ');
 
-					var status = data.status;
-					var updates = {};
+					geocoder.geocode(address, function (err, data) {
 
-					if (status === 'ZERO_RESULTS') {
-					} else {
+						var status = data.status;
+						var updates = {};
 
-						status = data.results[0].geometry.location_type;
-						var coords = data.results[0].geometry.location;
-						updates = {lat: coords.lat, lng: coords.lng};
-					}
+						if (status === 'ZERO_RESULTS') {
+						} else {
 
-					summary.push(status);
-					updates.Geocode = data;
-					updates.GeocodeStatus = status;
-
-					collection.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
-
-						counter++;
-
-						pace.op(counter);
-
-						if (counter >= count) {
-							db.close();
-							console.log("Summary:");
-							console.log(JSON.stringify(_.countBy(summary, function(v) { return v; }), null, 2));
+							status = data.results[0].geometry.location_type;
+							var coords = data.results[0].geometry.location;
+							updates = {lat: coords.lat, lng: coords.lng};
 						}
 
-					});
+						summary.push(status);
+						updates.Geocode = data;
+						updates.GeocodeStatus = status;
+						updates.FullAddress = address;
 
-				}, {}, argv.host, argv.port);
+						collection.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
 
-			}
+							counter++;
 
-		});
+							pace.op(counter);
+							sleep.sleep(argv.throttle);
+
+							if (counter >= count) {
+								db.close();
+								console.log("Summary:");
+								console.log(JSON.stringify(_.countBy(summary, function(v) { return v; }), null, 2));
+							}
+
+						});
+
+					}, {}, argv.host, argv.port);
+
+				}
+
+			});
+
+		} else {
+			console.log('All documents have been geocoded.');
+			db.close();
+		}
 
 	});
 
