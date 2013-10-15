@@ -76,7 +76,7 @@ if (argv.database) {
 
 	// connect to db
 	db = new NeDB({
-		filename: filename,
+		filename: filename + '.db',
 		autoload: true // automatic loading
 	});
 	
@@ -205,12 +205,12 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 				if (argv.type === 'csv') {
 					var output = d3.csv.format(docs);
-					util.print('Writing to ' + filename + '-output.csv...');
-					fs.writeFileSync(filename + '-output.csv', output);
+					util.print('Writing to ' + filename + '-geocoded.csv...');
+					fs.writeFileSync(filename + '-geocoded.csv', output);
 					util.print(' done.\n');
 				} else {
-					util.print('Writing to ' + filename + '-output.json...');
-					fs.writeFileSync(filename + '-output.json', JSON.stringify(docs, null, 4));
+					util.print('Writing to ' + filename + '-geocoded.json...');
+					fs.writeFileSync(filename + '-geocoded.json', JSON.stringify(docs, null, 4));
 					util.print(' done.\n');
 				}
 
