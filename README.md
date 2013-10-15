@@ -32,7 +32,12 @@ file-geocoder \
 	-a Address,City,State,Zip # list of fields containing the address, in order
 ```
 
-## install
+
+## Progress bar!
+
+![Progress bar!](http://i.imgur.com/5cF1Dah.png)
+
+## Install
 
 	npm install file-geocoder -g
 	
