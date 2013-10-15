@@ -5,7 +5,7 @@ Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.
 
 ## Examples
 
-#### Geocode a JSON file, hit http://localhost:8080 ([how to setup a local geocoder](http://www.datasciencetoolkit.org/ "Data Science Tookit")):
+#### Geocode a JSON file, hit http://localhost:8080 ([how to setup a local geocoder](http://www.datasciencetoolkit.org/developerdocs#setup "Data Science Tookit")):
 ```sh
 file-geocoder \
 	-f data.json \
