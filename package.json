@@ -1,7 +1,7 @@
 {
   "name": "file-geocoder",
   "version": "0.3.0",
-  "description": "Geocode a file (JSON or CSV)",
+  "description": "Geocodes a file (JSON or CSV)",
   "repository": "https://github.com/gabrielflorit/file-geocoder.git",
   "bin": {
     "file-geocoder": "./bin/file-geocoder"
@@ -16,7 +16,8 @@
     "async": ">=0.2.9",
     "geocoder": "git://github.com/gabrielflorit/geocoder.git#master",
     "sleep": ">=1.1.1",
-    "pace": "git://github.com/gabrielflorit/pace.git#master"
+    "pace": "git://github.com/gabrielflorit/pace.git#master",
+    "numeral": ">=1.4.8"
   },
   "engines": {
     "node": ">=0.10.17"

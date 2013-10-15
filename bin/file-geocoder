@@ -9,9 +9,10 @@ var async = require('async');
 var geocoder = require('geocoder');
 var sleep = require('sleep');
 var util = require('util');
+var numeral = require('numeral');
 
 var argv = optimist
-	.usage('Geocode a file (JSON or CSV). Talks to a Google-style geocoder.\nUsage: $0')
+	.usage('Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.\nUsage: $0')
 	.options('f', {
 		demand: true,
 		alias: 'file',
@@ -82,6 +83,8 @@ if (argv.database) {
 	
 	// clear db
 	db.remove({}, { multi: true});
+
+	util.print('Importing ' + numeral(json.length).format('0,0') + ' records...');
 	
 	// insert all records
 	async.each(json,
@@ -92,7 +95,7 @@ if (argv.database) {
 		},
 		function (err) {
 			if (!err) {
-				console.log('Imported ' + json.length + ' records.');
+				util.print(' done.\n');
 			}
 		});
 
@@ -205,11 +208,11 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 				if (argv.type === 'csv') {
 					var output = d3.csv.format(docs);
-					util.print('Writing to ' + filename + '-geocoded.csv...');
+					util.print('\nWriting to ' + filename + '-geocoded.csv...');
 					fs.writeFileSync(filename + '-geocoded.csv', output);
 					util.print(' done.\n');
 				} else {
-					util.print('Writing to ' + filename + '-geocoded.json...');
+					util.print('\nWriting to ' + filename + '-geocoded.json...');
 					fs.writeFileSync(filename + '-geocoded.json', JSON.stringify(docs, null, 4));
 					util.print(' done.\n');
 				}
