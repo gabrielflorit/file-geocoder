@@ -54,6 +54,7 @@ var argv = optimist
 
 var count;
 var db;
+var filename = argv.file.split('.')[0];
 if (argv.database) {
 
 	// connect to db
@@ -73,7 +74,7 @@ if (argv.database) {
 
 	// connect to db
 	db = new NeDB({
-		filename: argv.file.split('.')[0],
+		filename: filename,
 		autoload: true // automatic loading
 	});
 	
@@ -196,41 +197,24 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 			// export records
 			db.find({}, function(err, docs) {
 
-				// TODO: export csv or json
-				// TODO: remove _id
+				// no need for _id on output
+				docs.forEach(function(doc) {
+					delete doc._id;
+				});
 
-				util.print('Writing to sdf.json...');
-				fs.writeFileSync('test.json', JSON.stringify(docs, null, 4));
-				util.print(' done.\n');
+				if (argv.type === 'csv') {
+					var output = d3.csv.format(docs);
+					util.print('Writing to ' + filename + '-output.csv...');
+					fs.writeFileSync(filename + '-output.csv', output);
+					util.print(' done.\n');
+				} else {
+					util.print('Writing to ' + filename + '-output.json...');
+					fs.writeFileSync(filename + '-output.json', JSON.stringify(docs, null, 4));
+					util.print(' done.\n');
+				}
 
 			});
 
 		});
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
