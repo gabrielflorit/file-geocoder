@@ -8,7 +8,7 @@ Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.
 #### Geocode a JSON file, hit http://localhost:8080 ([how to setup a local geocoder](http://www.datasciencetoolkit.org/developerdocs#setup "Data Science Tookit")):
 ```sh
 file-geocoder \
-	-f data.json \
+	-f myaddresses.json \
 	-a Address,City,State,Zip # list of fields containing the address, in order
 ```		
 		
@@ -16,7 +16,7 @@ file-geocoder \
 #### Geocode a CSV file, hit Google, throttle geocoding requests to 1 per second ([read up on their usage limits](https://developers.google.com/maps/documentation/geocoding/#Limits "usage limits")):
 ```sh
 file-geocoder \
-	-f data.csv \
+	-f myaddresses.csv \
 	-t csv \ # file type - specify if not json
 	-a Address,City,State,Zip \ # list of fields containing the address, in order
 	-h maps.googleapis.com \ # geocoding host
@@ -28,7 +28,7 @@ file-geocoder \
 #### Your laptop battery died before the geocoder finished. No problem. file-geocoder stores its work on a .db file. Let's resume the geocoding: 
 ```sh
 file-geocoder \
-	-d data.db \ # database
+	-d myaddresses.db \ # database
 	-a Address,City,State,Zip # list of fields containing the address, in order
 ```
 
