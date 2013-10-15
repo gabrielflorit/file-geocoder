@@ -31,7 +31,7 @@ var argv = optimist
 	.options('d', {
 		demand: false,
 		alias: 'database',
-		describe: 'database containing records. If specified, will ignore file input.',
+		describe: 'database containing records. If specified, will ignore file option',
 		'default': null
 	})
 	.options('h', {

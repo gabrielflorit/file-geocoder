@@ -1,13 +1,14 @@
-mongo-geocoder
+file-geocoder
 ==============
 
-    Geocode a MongoDB collection. Talks to a Google-style geocoder.
-    Usage: mongo-geocoder
+    Geocode a file (JSON or CSV). Talks to a Google-style geocoder.
+    Usage: file-geocoder
 
-    Options:
-      -d, --database    the MongoDB database                                [required]
-      -c, --collection  the MongoDB collection                              [required]
-      -f, --fields      a comma-separated list of address fields, in order  [required]
-      -h, --host        the geocoder host                                   [default: "localhost"]
-      -p, --port        the geocoder port                                   [default: 8080]
-      -s, --connection  the MongoDB connection string                       [default: "mongodb://127.0.0.1:27017/"]
+	Options:
+	  -f, --file      JSON or CSV file to be geocoded                                     [required]
+	  -a, --fields    comma-separated list of address fields, in order                    [required]
+	  -t, --type      whether the file is JSON or CSV                                     [default: "json"]
+	  -d, --database  database containing records. If specified, will ignore file input.  [default: null]
+	  -h, --host      geocoder host                                                       [default: "localhost"]
+	  -p, --port      geocoder port                                                       [default: 8080]
+	  -s, --throttle  time (in seconds) to throttle the geocoding requests                [default: 0]
