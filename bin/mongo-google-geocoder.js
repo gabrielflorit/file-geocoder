@@ -100,7 +100,7 @@ var summary = [];
 var counter = 0;
 
 // get all the records with no geocode status
-db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
+db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 	// tell pace how many elements we're going to process
 	var pace = require('pace')({
@@ -110,10 +110,10 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 	// iterate over each record
 	async.each(docs,
-		function(doc, callback) {
+		function (doc, callback) {
 
 			// create the address
-			var address = argv.fields.split(',').map(function(value) {
+			var address = argv.fields.split(',').map(function (value) {
 				return doc[value];
 			}).join(', ');
 
@@ -128,8 +128,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 				try {
 
-					if (status === 'ZERO_RESULTS') {
-					} else {
+					if (status !== 'ZERO_RESULTS') {
 
 						status = data.results[0].geometry.location_type;
 						var coords = data.results[0].geometry.location;
@@ -137,7 +136,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 						// find the locality
 						locality = _(data.results[0].address_components)
-							.filter(function(v) {
+							.filter(function (v) {
 								return _.contains(v.types, 'locality');
 							})
 							.first(1)
@@ -146,7 +145,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 						// find the administrative_area_level_1
 						administrative_area_level_1 = _(data.results[0].address_components)
-							.filter(function(v) {
+							.filter(function (v) {
 								return _.contains(v.types, 'administrative_area_level_1');
 							})
 							.first(1)
@@ -155,14 +154,14 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 						// find the country
 						country = _(data.results[0].address_components)
-							.filter(function(v) {
+							.filter(function (v) {
 								return _.contains(v.types, 'country');
 							})
 							.first(1)
 							.pluck('long_name')
 							.value()[0];
 					}
-				} catch(e) {
+				} catch (e) {
 					console.log(JSON.stringify(data, null, 4));
 					throw e;
 				}
@@ -174,7 +173,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 				updates.GeocodeCountry = country;
 				updates.FullAddress = address;
 
-				db.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
+				db.update({_id: doc._id}, {$set: updates}, function (err, inserted) {
 
 					counter++;
 
@@ -189,16 +188,16 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 			}, {}, argv.host, argv.port);
 
 		},
-		function(err) {
+		function (err) {
 
 			console.log("Summary:");
-			console.log(JSON.stringify(_.countBy(summary, function(v) { return v; }), null, 2));
+			console.log(JSON.stringify(_.countBy(summary, function (v) { return v; }), null, 2));
 
 			// export records
-			db.find({}, function(err, docs) {
+			db.find({}, function (err, docs) {
 
 				// no need for _id on output
-				docs.forEach(function(doc) {
+				docs.forEach(function (doc) {
 					delete doc._id;
 				});
 
