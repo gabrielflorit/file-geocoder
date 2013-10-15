@@ -82,18 +82,57 @@ MongoClient.connect(argv.connection + argv.database, function(err, db) {
 
 						var status = data.status;
 						var updates = {};
+						var locality = '';
+						var administrative_area_level_1 = '';
+						var country = '';
 
-						if (status === 'ZERO_RESULTS') {
-						} else {
+						try {
 
-							status = data.results[0].geometry.location_type;
-							var coords = data.results[0].geometry.location;
-							updates = {lat: coords.lat, lng: coords.lng};
+							if (status === 'ZERO_RESULTS') {
+							} else {
+
+								status = data.results[0].geometry.location_type;
+								var coords = data.results[0].geometry.location;
+								updates = {lat: coords.lat, lng: coords.lng};
+
+								// find the locality
+								locality = _(data.results[0].address_components)
+									.filter(function(v) {
+										return _.contains(v.types, 'locality');
+									})
+									.first(1)
+									.pluck('long_name')
+									.value();
+
+								// find the administrative_area_level_1
+								administrative_area_level_1 = _(data.results[0].address_components)
+									.filter(function(v) {
+										return _.contains(v.types, 'administrative_area_level_1');
+									})
+									.first(1)
+									.pluck('long_name')
+									.value();
+
+								// find the country
+								country = _(data.results[0].address_components)
+									.filter(function(v) {
+										return _.contains(v.types, 'country');
+									})
+									.first(1)
+									.pluck('long_name')
+									.value();
+							}
+						} catch(e) {
+							console.log(JSON.stringify(data, null, 4));
+							throw e;
 						}
 
 						summary.push(status);
 						updates.Geocode = data;
 						updates.GeocodeStatus = status;
+						updates.GeocodeLocality = locality;
+						updates.GeocodeAdminAreaLevel1 = administrative_area_level_1;
+						updates.GeocodeCountry = country;
 						updates.FullAddress = address;
 
 						collection.update({_id:doc._id}, {$set:updates}, function(err, inserted) {
