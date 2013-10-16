@@ -73,12 +73,19 @@ if (argv.database) {
 
 } else {
 
+	var json;
+
 	// parse file
 	var file = fs.readFileSync(argv.file, 'utf8');
 
-	var json = argv.type.toLowerCase() === 'json'
-		? JSON.parse(file)
-		: d3.csv.parse(file);
+	try {
+		json = argv.type.toLowerCase() === 'json'
+			? JSON.parse(file)
+			: d3.csv.parse(file);
+	} catch (e) {
+		console.log('Is this a CSV file? If so, add the type param: "-t csv"');
+		throw e;
+	}
 
 	// connect to db
 	db = new NeDB({
