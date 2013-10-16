@@ -61,3 +61,7 @@ file-geocoder \
 ## Install
 
 	npm install file-geocoder -g
+
+## Notes
+
+file-geocoder import the JSON/CSV file to a [NeDB](https://github.com/louischatriot/nedb "NeDB") datastore before geocoding. For performance reasons, NeDB [keeps a copy of the whole database in memory](https://github.com/louischatriot/nedb "Memory footprint"). In other words, file-geocoder is a memory hog: if the JSON file is 1GB, you better have at least that much RAM.
