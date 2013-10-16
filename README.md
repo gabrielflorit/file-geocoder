@@ -8,19 +8,19 @@ Geocodes a file (JSON or CSV). Requires a Google-style geocoder.
 Given a CSV,
 
 ```
-ADDRESS
-1150 15th Street NW Washington DC 20071
-135 Morrisey Blvd Boston MA 02125
-242 West 41st Street New York NY 10036
+address,              city,       state, zip
+135 Morrisey Blvd,    Boston,     MA,    02125
+1150 15th Street NW,  Washington, DC,    20071
+242 West 41st Street, New York,   NY,    10036 
 ```
 
 file-geocoder adds several geocoding fields ([what's the deal with GeocodeAdminAreaLevel1?](https://developers.google.com/maps/documentation/geocoding/#Types "Address Component Types")):
 
 ```
-ADDRESS,                                 GeocodeLat, GeocodeLng, GeocodeStatus, GeocodeLocality, GeocodeAdminAreaLevel1, GeocodeCountry, GeocodeAddress
-1150 15th Street NW Washington DC 20071, 38.904711,  -77.034647, ROOFTOP,       Washington,      DC,                     United States,  1150 15th Street NW Washington DC 20071
-135 Morrisey Blvd Boston MA 02125,       42.293929,  -71.047218, ROOFTOP,       Boston,          MA,                     United States,  135 Morrisey Blvd Boston MA 02125
-242 West 41st Street New York NY 10036,  40.755819,  -73.988402, ROOFTOP,       New York,        NY,                     United States,  242 West 41st Street New York NY 10036
+address,              city,       state, zip,   GeocodeLat, GeocodeLng, GeocodeStatus, GeocodeLocality, GeocodeAdminAreaLevel1, GeocodeCountry, GeocodeAddress
+135 Morrisey Blvd,    Boston,     MA,    02125, 42.293929,  -71.047218, ROOFTOP,       Boston,          MA,                     United States,  "135 Morrisey Blvd, Boston, MA, 02125"
+1150 15th Street NW,  Washington, DC,    20071, 38.904711,  -77.034647, ROOFTOP,       Washington,      DC,                     United States,  "1150 15th Street NW, Washington, DC, 20071"
+242 West 41st Street, New York,   NY,    10036, 40.755819,  -73.988402, ROOFTOP,       New York,        NY,                     United States,  "242 West 41st Street, New York, NY, 10036"
 ```
 
 
@@ -61,4 +61,3 @@ file-geocoder \
 ## Install
 
 	npm install file-geocoder -g
-	
