@@ -35,7 +35,7 @@ file-geocoder \
 
 ## Progress bar!
 
-![Progress bar!](http://i.imgur.com/5cF1Dah.png)
+![Progress bar!](https://pbs.twimg.com/media/BWp_jTtCAAATBGV.png)
 
 ## Install
 
