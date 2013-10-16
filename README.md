@@ -14,7 +14,7 @@ ADDRESS
 242 West 41st Street New York NY 10036
 ```
 
-file-geocoder adds several geocoding fields:
+file-geocoder adds several geocoding fields ([what's the deal with GeocodeAdminAreaLevel1?](https://developers.google.com/maps/documentation/geocoding/#Types "Address Component Types")):
 
 ```
 ADDRESS,                                 GeocodeLat, GeocodeLng, GeocodeStatus, GeocodeLocality, GeocodeAdminAreaLevel1, GeocodeCountry, GeocodeAddress
