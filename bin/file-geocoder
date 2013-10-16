@@ -23,12 +23,6 @@ var argv = optimist
 		alias: 'fields',
 		describe: 'comma-separated list of address fields, in order'
 	})
-	.options('t', {
-		demand: false,
-		alias: 'type',
-		'default': 'json',
-		describe: 'whether the file is JSON or CSV'
-	})
 	.options('d', {
 		demand: false,
 		alias: 'database',
@@ -60,6 +54,7 @@ if (!argv.file && !argv.database) {
 	process.exit(0);
 }
 
+var fileType;
 var count;
 var db;
 var filename = argv.file.split('.')[0];
@@ -79,12 +74,13 @@ if (argv.database) {
 	var file = fs.readFileSync(argv.file, 'utf8');
 
 	try {
-		json = argv.type.toLowerCase() === 'json'
-			? JSON.parse(file)
-			: d3.csv.parse(file);
+		// try parsing as json
+		json = JSON.parse(file);
+		fileType = 'json';
 	} catch (e) {
-		console.log('Is this a CSV file? If so, add the type param: "-t csv"');
-		throw e;
+		// try parsing as csv
+		json = d3.csv.parse(file);
+		fileType = 'csv';
 	}
 
 	// connect to db
@@ -138,72 +134,82 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 			// geocode
 			geocoder.geocode(address, function (err, data) {
-	
-				var status = data.status;
-				var updates = {};
-				var locality = '';
-				var administrative_area_level_1 = '';
-				var country = '';
 
-				try {
-
-					if (status !== 'ZERO_RESULTS') {
-
-						status = data.results[0].geometry.location_type;
-						var coords = data.results[0].geometry.location;
-						updates = {GeocodeLat: coords.lat, GeocodeLng: coords.lng};
-
-						// find the locality
-						locality = _(data.results[0].address_components)
-							.filter(function (v) {
-								return _.contains(v.types, 'locality');
-							})
-							.first(1)
-							.pluck('long_name')
-							.value()[0];
-
-						// find the administrative_area_level_1
-						administrative_area_level_1 = _(data.results[0].address_components)
-							.filter(function (v) {
-								return _.contains(v.types, 'administrative_area_level_1');
-							})
-							.first(1)
-							.pluck('long_name')
-							.value()[0];
-
-						// find the country
-						country = _(data.results[0].address_components)
-							.filter(function (v) {
-								return _.contains(v.types, 'country');
-							})
-							.first(1)
-							.pluck('long_name')
-							.value()[0];
-					}
-				} catch (e) {
-					console.log(JSON.stringify(data, null, 4));
-					throw e;
-				}
-
-				summary.push(status);
-				updates.GeocodeStatus = status;
-				updates.GeocodeLocality = locality;
-				updates.GeocodeAdminAreaLevel1 = administrative_area_level_1;
-				updates.GeocodeCountry = country;
-				updates.FullAddress = address;
-
-				db.update({_id: doc._id}, {$set: updates}, function (err, inserted) {
-
-					counter++;
-
-					pace.op(counter);
-					sleep.sleep(argv.throttle);
-
-					// call async with callback
+				if (err) {
+					console.log(err);
 					callback(err);
 
-				});
+				} else {
 
+					var status = data.status;
+					var updates = {};
+					var locality = '';
+					var administrative_area_level_1 = '';
+					var country = '';
+
+					try {
+
+						if (status !== 'ZERO_RESULTS') {
+
+							var results = data.results[0];
+
+							status = results.geometry.location_type;
+							var coords = results.geometry.location;
+							updates = {GeocodeLat: coords.lat, GeocodeLng: coords.lng};
+
+							// find the locality
+							locality = _(results.address_components)
+								.filter(function (v) {
+									return _.contains(v.types, 'locality');
+								})
+								.first(1)
+								.pluck('long_name')
+								.value()[0];
+
+							// find the administrative_area_level_1
+							administrative_area_level_1 = _(results.address_components)
+								.filter(function (v) {
+									return _.contains(v.types, 'administrative_area_level_1');
+								})
+								.first(1)
+								.pluck('long_name')
+								.value()[0];
+
+							// find the country
+							country = _(results.address_components)
+								.filter(function (v) {
+									return _.contains(v.types, 'country');
+								})
+								.first(1)
+								.pluck('long_name')
+								.value()[0];
+						}
+					} catch (e) {
+						console.log(JSON.stringify(data, null, 4));
+						throw e;
+					}
+
+					summary.push(status);
+					updates.GeocodeStatus = status;
+					updates.GeocodeLocality = locality;
+					updates.GeocodeAdminAreaLevel1 = administrative_area_level_1;
+					updates.GeocodeCountry = country;
+					updates.GeocodeAddress = address;
+
+					db.update({_id: doc._id}, {$set: updates}, function (err, inserted) {
+
+						counter++;
+
+						pace.op(counter);
+						sleep.sleep(argv.throttle);
+
+						// call async with callback
+						callback(err);
+
+					});
+
+				}
+	
 			}, {}, argv.host, argv.port);
 
 		},
@@ -220,7 +226,7 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 					delete doc._id;
 				});
 
-				if (argv.type === 'csv') {
+				if (fileType === 'csv') {
 					var output = d3.csv.format(docs);
 					util.print('\nWriting to ' + filename + '-geocoded.csv...');
 					fs.writeFileSync(filename + '-geocoded.csv', output);
