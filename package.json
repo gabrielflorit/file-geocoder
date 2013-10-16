@@ -1,6 +1,6 @@
 {
   "name": "file-geocoder",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Geocodes a file (JSON or CSV). Requires a Google-style geocoder.",
   "repository": "https://github.com/gabrielflorit/file-geocoder.git",
   "bin": {
