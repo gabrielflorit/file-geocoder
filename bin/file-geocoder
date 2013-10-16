@@ -14,7 +14,7 @@ var numeral = require('numeral');
 var argv = optimist
 	.usage('Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.\nUsage: $0')
 	.options('f', {
-		demand: true,
+		demand: false,
 		alias: 'file',
 		describe: 'JSON or CSV file to be geocoded'
 	})
@@ -54,6 +54,11 @@ var argv = optimist
 		'default': 0
 	})
 	.argv;
+
+if (!argv.file && !argv.database) {
+	console.log("You need to specify either 'file' or 'database'.");
+	process.exit(0);
+}
 
 var count;
 var db;
