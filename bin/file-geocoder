@@ -129,7 +129,7 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 			var address = argv.fields.split(',').map(function (value) {
 				return _.find(doc, function(v, i) {
 					return i.toLowerCase() == value.toLowerCase();
-				});
+				}).trim();
 			}).join(', ');
 
 			// geocode
