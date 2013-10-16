@@ -131,7 +131,9 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 			// create the address
 			var address = argv.fields.split(',').map(function (value) {
-				return doc[value];
+				return _.find(doc, function(v, i) {
+					return i.toLowerCase() == value.toLowerCase();
+				});
 			}).join(', ');
 
 			// geocode
