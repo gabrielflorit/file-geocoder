@@ -3,7 +3,7 @@ file-geocoder
 
 Geocodes a file (JSON or CSV). Requires a Google-style geocoder.
 
-## Example
+### For example:
 
 Given a CSV,
 
