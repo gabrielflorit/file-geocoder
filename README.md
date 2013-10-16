@@ -9,7 +9,7 @@ Geocodes a file (JSON or CSV). Requires a Google-style geocoder.
 ```sh
 file-geocoder \
 	-f myaddresses.json \
-	-a Address,City,State,Zip # list of fields containing the address, in order
+	-a address,city,state,zip # list of fields containing the address, in order
 ```		
 		
 
@@ -17,8 +17,7 @@ file-geocoder \
 ```sh
 file-geocoder \
 	-f myaddresses.csv \
-	-t csv \ # file type - specify if not json
-	-a Address,City,State,Zip \ # list of fields containing the address, in order
+	-a address,city,state,zip \ # list of fields containing the address, in order
 	-h maps.googleapis.com \ # geocoding host
 	-p 80 \ # geocoding port
 	-s 1 # time (in seconds) to throttle the geocoding requests
@@ -29,7 +28,7 @@ file-geocoder \
 ```sh
 file-geocoder \
 	-d myaddresses.db \ # database
-	-a Address,City,State,Zip # list of fields containing the address, in order
+	-a address,city,state,zip # list of fields containing the address, in order
 ```
 
 
