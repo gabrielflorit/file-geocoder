@@ -14,7 +14,7 @@ address,              city,       state, zip
 242 West 41st Street, New York,   NY,    10036 
 ```
 
-file-geocoder adds several geocoding fields ([what's the deal with GeocodeAdminAreaLevel1?](https://developers.google.com/maps/documentation/geocoding/#Types "Address Component Types")):
+**file-geocoder** adds several geocoding fields ([what's the deal with GeocodeAdminAreaLevel1?](https://developers.google.com/maps/documentation/geocoding/#Types "Address Component Types")):
 
 ```
 address,              city,       state, zip,   GeocodeLat, GeocodeLng, GeocodeStatus, GeocodeLocality, GeocodeAdminAreaLevel1, GeocodeCountry, GeocodeAddress
@@ -46,7 +46,7 @@ file-geocoder \
 ```
 
 
-#### Your laptop battery died before the geocoder finished. No problem. file-geocoder stores its work on a .db file. Let's resume the geocoding: 
+#### Your laptop battery died before the geocoder finished. No problem. **file-geocoder** stores its work on a .db file. Let's resume the geocoding: 
 ```sh
 file-geocoder \
 	-d myaddresses.db \ # database
@@ -64,4 +64,4 @@ file-geocoder \
 
 ## Notes
 
-file-geocoder import the JSON/CSV file to a [NeDB](https://github.com/louischatriot/nedb "NeDB") datastore before geocoding. For performance reasons, NeDB [keeps a copy of the whole database in memory](https://github.com/louischatriot/nedb "Memory footprint"). In other words, file-geocoder is a memory hog: if the JSON file is 1GB, you better have at least that much RAM.
+**file-geocoder** imports the JSON/CSV file to a [NeDB](https://github.com/louischatriot/nedb "NeDB") datastore before geocoding. For performance reasons, NeDB [keeps a copy of the whole database in memory](https://github.com/louischatriot/nedb "Memory footprint"). In other words, **file-geocoder** is a memory hog. If the JSON file is 1GB, you better have at least that much RAM.
