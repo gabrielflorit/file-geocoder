@@ -12,7 +12,7 @@ var util = require('util');
 var numeral = require('numeral');
 
 var argv = optimist
-	.usage('Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.\nUsage: $0')
+	.usage('Geocodes a file (JSON or CSV). Requires a Google-style geocoder.\nUsage: $0')
 	.options('f', {
 		demand: false,
 		alias: 'file',

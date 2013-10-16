@@ -1,7 +1,7 @@
 file-geocoder
 ==============
 
-Geocodes a file (JSON or CSV). Talks to a Google-style geocoder.
+Geocodes a file (JSON or CSV). Requires a Google-style geocoder.
 
 ## Examples
 
