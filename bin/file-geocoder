@@ -57,7 +57,6 @@ if (!argv.file && !argv.database) {
 var fileType;
 var count;
 var db;
-var filename = argv.file.split('.')[0];
 if (argv.database) {
 
 	// connect to db
@@ -85,14 +84,14 @@ if (argv.database) {
 
 	// connect to db
 	db = new NeDB({
-		filename: filename + '.db',
+		filename: argv.file.split('.')[0] + '.db',
 		autoload: true // automatic loading
 	});
-	
+
 	// clear db
 	db.remove({}, { multi: true});
 
-	util.print('Importing ' + numeral(json.length).format('0,0') + ' records...');
+	util.print('Importing ' + numeral(json.length).format('0,0') + ' records into ' + db.filename + '...');
 	
 	// insert all records
 	async.each(json,
@@ -226,14 +225,16 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 					delete doc._id;
 				});
 
+				var outputFilename = db.filename.split('.')[0];
+
 				if (fileType === 'csv') {
 					var output = d3.csv.format(docs);
-					util.print('\nWriting to ' + filename + '-geocoded.csv...');
-					fs.writeFileSync(filename + '-geocoded.csv', output);
+					util.print('\nWriting to ' + outputFilename + '-geocoded.csv...');
+					fs.writeFileSync(outputFilename + '-geocoded.csv', output);
 					util.print(' done.\n');
 				} else {
-					util.print('\nWriting to ' + filename + '-geocoded.json...');
-					fs.writeFileSync(filename + '-geocoded.json', JSON.stringify(docs, null, 4));
+					util.print('\nWriting to ' + outputFilename + '-geocoded.json...');
+					fs.writeFileSync(outputFilename + '-geocoded.json', JSON.stringify(docs, null, 4));
 					util.print(' done.\n');
 				}
 
