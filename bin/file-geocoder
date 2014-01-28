@@ -92,7 +92,7 @@ if (argv.database) {
 	db.remove({}, { multi: true});
 
 	util.print('Importing ' + numeral(json.length).format('0,0') + ' records into ' + db.filename + '...');
-	
+
 	// insert all records
 	async.each(json,
 		function (doc, callback) {
@@ -103,6 +103,8 @@ if (argv.database) {
 		function (err) {
 			if (!err) {
 				util.print(' done.\n');
+			} else {
+				console.log('\n\nERROR during record insertion: ' + err);
 			}
 		});
 
@@ -124,12 +126,19 @@ db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 	async.each(docs,
 		function (doc, callback) {
 
-			// create the address
-			var address = argv.fields.split(',').map(function (value) {
-				return _.find(doc, function(v, i) {
-					return i.toLowerCase() == value.toLowerCase();
-				}).trim();
-			}).join(', ');
+			var address;
+
+			try {
+				// try creating the address
+				address = argv.fields.split(',').map(function (value) {
+					return _.find(doc, function(v, i) {
+						return i.toLowerCase() == value.toLowerCase();
+					}).trim();
+				}).join(', ');
+			} catch (e) {
+				console.log('\n\nERROR during address creation for document: ' + JSON.stringify(doc, null, 4));
+				throw e;
+			}
 
 			// geocode
 			geocoder.geocode(address, function (err, data) {
