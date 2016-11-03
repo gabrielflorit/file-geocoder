@@ -27,30 +27,30 @@ var argv = optimist
 		demand: false,
 		alias: 'database',
 		describe: 'database containing records. If specified, will ignore file option',
-		default: null
+		'default': null
 	})
 	.options('h', {
 		demand: false,
 		alias: 'host',
 		describe: 'geocoder host',
-		default: 'localhost'
+		'default': 'localhost'
 	})
 	.options('p', {
 		demand: false,
 		alias: 'port',
 		describe: 'geocoder port',
-		default: 8080
+		'default': 8080
 	})
 	.options('s', {
 		demand: false,
 		alias: 'throttle',
 		describe: 'time (in seconds) to throttle the geocoding requests',
-		default: 0
+		'default': 0
 	})
 	.argv;
 
 if (!argv.file && !argv.database) {
-	console.log('You need to specify either "file" or "database".');
+	console.log("You need to specify either 'file' or 'database'.");
 	process.exit(0);
 }
 
@@ -78,7 +78,7 @@ if (argv.database) {
 		fileType = 'json';
 	} catch (e) {
 		// try parsing as csv
-		json = d3.csv.parse(file);
+		json = d3.csvParse(file);
 		fileType = 'csv';
 	}
 
@@ -95,13 +95,12 @@ if (argv.database) {
 
 	// insert all records
 	async.each(json,
-		function(doc, callback) {
-			db.insert(doc, function(err, newDoc) {
+		function (doc, callback) {
+			db.insert(doc, function (err, newDoc) {
 				callback(err);
 			});
 		},
-
-		function(err) {
+		function (err) {
 			if (!err) {
 				util.print(' done.\n');
 			} else {
@@ -115,7 +114,7 @@ var summary = [];
 var counter = 0;
 
 // get all the records with no geocode status
-db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
+db.find({GeocodeStatus: {$exists: false}}, function (err, docs) {
 
 	// tell pace how many elements we're going to process
 	var pace = require('pace')({
@@ -125,13 +124,13 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 
 	// iterate over each record
 	async.each(docs,
-		function(doc, callback) {
+		function (doc, callback) {
 
 			var address;
 
 			try {
 				// try creating the address
-				address = argv.fields.split(',').map(function(value) {
+				address = argv.fields.split(',').map(function (value) {
 					return _.find(doc, function(v, i) {
 						return i.toLowerCase() == value.toLowerCase();
 					}).trim();
@@ -142,7 +141,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 			}
 
 			// geocode
-			geocoder.geocode(address, function(err, data) {
+			geocoder.geocode(address, function (err, data) {
 
 				if (err) {
 					console.log(err);
@@ -166,31 +165,33 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 							var coords = results.geometry.location;
 							updates = {GeocodeLat: coords.lat, GeocodeLng: coords.lng};
 
+							debugger;
+
 							// find the locality
 							locality = _(results.address_components)
-								.filter(function(v) {
-									return _.contains(v.types, 'locality');
-								})
+								.filter(function (v,w) {
+									return _.includes(v.types, 'locality');
+								}).chain()
 								.first(1)
-								.pluck('long_name')
+								.property('long_name')
 								.value()[0];
 
 							// find the administrative_area_level_1
 							administrative_area_level_1 = _(results.address_components)
-								.filter(function(v) {
-									return _.contains(v.types, 'administrative_area_level_1');
-								})
+								.filter(function (v,w) {
+									return _.includes(v.types, 'administrative_area_level_1');
+								}).chain()
 								.first(1)
-								.pluck('long_name')
+								.property('long_name')
 								.value()[0];
 
 							// find the country
 							country = _(results.address_components)
-								.filter(function(v) {
-									return _.contains(v.types, 'country');
-								})
+								.filter(function (v,w) {
+									return _.includes(v.types, 'country');
+								}).chain()
 								.first(1)
-								.pluck('long_name')
+								.property('long_name')
 								.value()[0];
 						}
 					} catch (e) {
@@ -205,7 +206,7 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 					updates.GeocodeCountry = country;
 					updates.GeocodeAddress = address;
 
-					db.update({_id: doc._id}, {$set: updates}, function(err, inserted) {
+					db.update({_id: doc._id}, {$set: updates}, function (err, inserted) {
 
 						counter++;
 
@@ -218,28 +219,27 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 					});
 
 				}
-
+	
 			}, {}, argv.host, argv.port);
 
 		},
+		function (err) {
 
-		function(err) {
-
-			console.log('Summary:');
-			console.log(JSON.stringify(_.countBy(summary, function(v) { return v; }), null, 2));
+			console.log("Summary:");
+			console.log(JSON.stringify(_.countBy(summary, function (v) { return v; }), null, 2));
 
 			// export records
-			db.find({}, function(err, docs) {
+			db.find({}, function (err, docs) {
 
 				// no need for _id on output
-				docs.forEach(function(doc) {
+				docs.forEach(function (doc) {
 					delete doc._id;
 				});
 
 				var outputFilename = db.filename.split('.')[0];
 
 				if (fileType === 'csv') {
-					var output = d3.csv.format(docs);
+					var output = d3.csvFormat(docs);
 					util.print('\nWriting to ' + outputFilename + '-geocoded.csv...');
 					fs.writeFileSync(outputFilename + '-geocoded.csv', output);
 					util.print(' done.\n');
@@ -254,4 +254,3 @@ db.find({GeocodeStatus: {$exists: false}}, function(err, docs) {
 		});
 
 });
-
